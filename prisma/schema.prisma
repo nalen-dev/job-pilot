@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           BigInt          @id
+  name         String
+  email        String
+  password     String
+  avatar       String
+  createdAt    DateTime        @map("created_at")
+  updatedAt    DateTime        @map("updated_at")
+  uploadedFile UploadedFile[]
+
+  @@map("user")
+}
+
+model UploadedFile {
+  id           BigInt          @id
+  userId       BigInt          @map("user_id")
+  objectKey    String          @map("object_key")
+  bucket       String
+  mimeType     String          @map("mime_type")
+  createdAt    DateTime        @map("created_at")
+  updatedAt    DateTime        @map("updated_at")
+  isActive     Boolean         @map("is_active")
+  user         User            @relation(fields: [userId], references: [id])
+  cvDetail     CvDetail[]
+
+  @@map("uploaded_file")
+}
+
+model CvDetail {
+  id           BigInt          @id
+  title        String
+  category     String
+  fileId       BigInt          @map("file_id")
+  cvExtract    String          @map("cv_extract")
+  createdAt    DateTime        @map("created_at")
+  updatedAt    DateTime        @map("updated_at")
+  file         UploadedFile    @relation(fields: [fileId], references: [id])
+  aiSummarization AiSummarization[]
+  cvdSkill     CvdSkill[]
+
+  @@map("cv_detail")
+}
+
+model AiSummarization {
+  id             BigInt          @id
+  cvdId          BigInt          @map("cvd_id")
+  jobTitle       String          @map("job_title")
+  jobLink        String          @map("job_link")
+  summarizeDetail String         @map("sumarize_detail")
+  createdAt      DateTime        @map("created_at")
+  updatedAt      DateTime        @map("updated_at")
+  cvDetail       CvDetail        @relation(fields: [cvdId], references: [id])
+  userGapSkill   UserGapSkill[]
+
+  @@map("ai_summarization")
+}
+
+model CvdSkill {
+  id      BigInt          @id
+  cvdId   BigInt          @map("cvd_id")
+  skill   String
+  level   String
+  cvDetail CvDetail       @relation(fields: [cvdId], references: [id])
+
+  @@map("cvd_skill")
+}
+
+model UserGapSkill {
+  id              BigInt          @id
+  aisId           BigInt          @map("ais_id")
+  skill           String
+  timeToMaster    String          @map("time_to_master")
+  aiSummarization AiSummarization @relation(fields: [aisId], references: [id])
+  assessmentDetail AssessmentDetail[]
+
+  @@map("user_gap_skill")
+}
+
+model AssessmentDetail {
+  id              BigInt          @id
+  ugsId           BigInt          @map("ugs_id")
+  createdAt       DateTime        @map("created_at")
+  userGapSkill    UserGapSkill    @relation(fields: [ugsId], references: [id])
+  assessmentQuestion AssessmentQuestion[]
+
+  @@map("assessment_detail")
+}
+
+model AssessmentQuestion {
+  id              BigInt          @id
+  asdId           BigInt          @map("asd_id")
+  question        String
+  ans1            String          @map("ans_1")
+  ans2            String          @map("ans_2")
+  ans3            String          @map("ans_3")
+  ans4            String          @map("ans_4")
+  ansRight        String          @map("ans_right")
+  ansUser         String          @map("ans_user")
+  assessmentDetail AssessmentDetail @relation(fields: [asdId], references: [id])
+
+  @@map("assessment_question")
+}
