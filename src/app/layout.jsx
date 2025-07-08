@@ -13,7 +13,8 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: "Job Pilot | Develop",
-  description: "Empower job seekers to take control of their career journey by providing a smart, AI-powered platform that analyzes CV, identifies skill gaps, and offers actionable feedback.",
+  description:
+    "Empower job seekers to take control of their career journey by providing a smart, AI-powered platform that analyzes CV, identifies skill gaps, and offers actionable feedback.",
 };
 
 export default function RootLayout({ children }) {
