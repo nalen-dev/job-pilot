@@ -3,18 +3,24 @@ import { prisma } from "../utils/prisma"
 import { hashPassword } from './auth';
 
 export async function createUser(name, email, password) {
-  const hashedPassword = await hashPassword(password);
+  try {
+    const hashedPassword = await hashPassword(password);
   
-  const user = await prisma.user.create({
-    data: { name, email, password: hashedPassword },
-  });
-
-  return {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    avatar: ""
-  };
+    const user = await prisma.user.create({
+      data: { name, email, password: hashedPassword },
+    });
+  
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      avatar: ""
+    };
+  }catch(error) {
+    console.error('Error creating user:', error);
+    throw new Error('Failed to create user');
+  }
+  
 }
 
 export async function getUserByEmail(email, withPassword = false) {

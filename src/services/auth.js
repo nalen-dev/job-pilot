@@ -13,15 +13,15 @@ export async function verifyPassword(password, hashedpassword) {
 }
 
 export async function createSession(userId) {
-    const expiredAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30);
+    const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30);
     
     return await prisma.session.create({
-      data: { userId, expiredAt },
+      data: { userId, expiresAt },
     });
   }
 
   export async function getSession(sessionId) {
-    const session = await prisma.session.findFirst({
+    const session = await prisma.session.findUnique({
       where: { id: sessionId },
       include: {
         user: {
