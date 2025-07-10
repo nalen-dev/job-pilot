@@ -9,46 +9,37 @@ datasource db {
 }
 
 model User {
-  id           BigInt          @id
+  id           String          @id @default(cuid())
   name         String
-  email        String
+  email        String          @unique
   password     String
-  avatar       String
-  createdAt    DateTime        @map("created_at")
-  updatedAt    DateTime        @map("updated_at")
-  uploadedFile UploadedFile[]
+  avatar       String?
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime        @updatedAt @map("updated_at")
+  session      Session[]
+  cvFile       CvFile[]
 
   @@map("user")
 }
-
-model UploadedFile {
-  id           BigInt          @id
-  userId       BigInt          @map("user_id")
-  objectKey    String          @map("object_key")
-  bucket       String
-  mimeType     String          @map("mime_type")
-  createdAt    DateTime        @map("created_at")
-  updatedAt    DateTime        @map("updated_at")
-  isActive     Boolean         @map("is_active")
-  user         User            @relation(fields: [userId], references: [id])
-  cvDetail     CvDetail[]
-
-  @@map("uploaded_file")
+model Session {
+  id           String          @id @default(cuid())
+  userId       String
+  expiresAt    DateTime
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model CvDetail {
-  id           BigInt          @id
-  title        String
-  category     String
-  fileId       BigInt          @map("file_id")
-  cvExtract    String          @map("cv_extract")
-  createdAt    DateTime        @map("created_at")
-  updatedAt    DateTime        @map("updated_at")
-  file         UploadedFile    @relation(fields: [fileId], references: [id])
-  aiSummarization AiSummarization[]
-  cvdSkill     CvdSkill[]
+model CvFile {
+  id           String          @id @default(cuid())
+  userId       String          @map("user_id")
+  fileName     String          @map("file_name")
+  path         String          @map("path")
+  size         Int             @map("size")
+  createdAt    DateTime        @map("created_at") @default(now())
+  user         User            @relation(fields: [userId], references: [id])
 
-  @@map("cv_detail")
+  @@map("cv_file")
 }
 
 model AiSummarization {
@@ -59,20 +50,9 @@ model AiSummarization {
   summarizeDetail String         @map("sumarize_detail")
   createdAt      DateTime        @map("created_at")
   updatedAt      DateTime        @map("updated_at")
-  cvDetail       CvDetail        @relation(fields: [cvdId], references: [id])
   userGapSkill   UserGapSkill[]
 
   @@map("ai_summarization")
-}
-
-model CvdSkill {
-  id      BigInt          @id
-  cvdId   BigInt          @map("cvd_id")
-  skill   String
-  level   String
-  cvDetail CvDetail       @relation(fields: [cvdId], references: [id])
-
-  @@map("cvd_skill")
 }
 
 model UserGapSkill {
