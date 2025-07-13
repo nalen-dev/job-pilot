@@ -16,7 +16,7 @@ import {
 import { useActionState, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export const FormDelete = ({ id, fileName }) => {
+export const FormDelete = ({ id, objectKey }) => {
   const initialState = { status: "", message: "" };
   const [state, action, pending] = useActionState(deleteCvAction, initialState);
   const [open, setOpen] = useState(false);
@@ -31,7 +31,10 @@ export const FormDelete = ({ id, fileName }) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="cursor-pointer" variant="destructive">
+        <Button
+          className="cursor-pointer hover:bg-red-700"
+          variant="destructive"
+        >
           <Trash2 className="w-4 h-4" />
           Delete
         </Button>
@@ -54,10 +57,10 @@ export const FormDelete = ({ id, fileName }) => {
           </DialogClose>
           <form action={action}>
             <input type="hidden" name="id" value={id} readOnly />
-            <input type="hidden" name="fileName" value={fileName} readOnly />
+            <input type="hidden" name="objectKey" value={objectKey} readOnly />
             <Button
               disabled={pending}
-              className="cursor-pointer w-full"
+              className="cursor-pointer w-full hover:bg-red-700"
               type="submit"
               variant="destructive"
             >

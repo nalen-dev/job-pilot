@@ -82,7 +82,7 @@ export const columns = [
     id: "actions",
     header: "Actions",
     cell: ({ row }) => {
-      const { id, fileName, previewUrl } = row.original;
+      const { id, objectKey, previewUrl } = row.original;
       return (
         <div className="flex gap-2">
           <a
@@ -91,19 +91,19 @@ export const columns = [
             rel="noopener noreferrer"
             title="Preview PDF"
           >
-            <Button className="bg-green-600">
+            <Button className="bg-green-600 hover:bg-green-800 cursor-pointer">
               <EyeIcon className="w-4 h-4" />
               Preview
             </Button>
           </a>
-          <FormDelete id={id} fileName={fileName} />
+          <FormDelete id={id} objectKey={objectKey} />
         </div>
       );
     },
   },
 ];
 
-export function DataTableDemo({ data }) {
+export function DataTable({ data }) {
   const [sorting, setSorting] = React.useState([]);
   const [columnFilters, setColumnFilters] = React.useState([]);
   const [columnVisibility, setColumnVisibility] = React.useState({});
@@ -188,9 +188,9 @@ export function DataTableDemo({ data }) {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded-md border">
+      <div className="rounded-md border shadow-sm">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-gray-100">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
@@ -236,7 +236,7 @@ export function DataTableDemo({ data }) {
           </TableBody>
         </Table>
       </div>
-      <div className="flex justify-center py-4">
+      <div className="flex justify-center pt-4">
         <DataTablePagination table={table} />
       </div>
     </div>

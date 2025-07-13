@@ -33,6 +33,7 @@ model Session {
 model CvFile {
   id           String          @id @default(cuid())
   userId       String          @map("user_id")
+  objectKey    String          @map("object_key")
   fileName     String          @map("file_name")
   path         String          @map("path")
   size         Int             @map("size")

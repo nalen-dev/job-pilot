@@ -1,7 +1,8 @@
 import { FormUpload } from "./_components/form-upload";
-import { DataTableDemo } from "./_components/table";
+import { DataTable } from "./_components/table";
 import { getCVByUserId } from "@/services/cv";
 import { getCurrentSession } from "@/services/auth";
+import { Card } from "@/components/ui/card";
 
 export default async function Page() {
     const filesWithUrl = await getCVByUserId();
@@ -19,7 +20,9 @@ export default async function Page() {
             <section className="mt-10 space-y-2">
                 <h2 className="text-xl font-semibold">Uploaded CV History</h2>
                 <p className="text-zinc-500 text-sm">Here is your lists of CV</p>
-                <DataTableDemo data={filesWithUrl} />
+                <Card className="px-4">
+                    <DataTable data={filesWithUrl} />
+                </Card>
             </section>
         </main>
     )

@@ -12,6 +12,7 @@ export async function getCVByUserId() {
         where: { userId: session.user.id },
         select: {
             id: true,
+            objectKey: true,
             fileName: true,
             path: true,
             createdAt: true,
@@ -24,7 +25,7 @@ export async function getCVByUserId() {
     const filesWithUrl = await Promise.all(
         files.map(async (file) => ({
             ...file,
-            previewUrl: await generatePresignedUrl(file.fileName),
+            previewUrl: await generatePresignedUrl(file.objectKey),
         }))
     );
 
