@@ -1,33 +1,16 @@
-import { prisma } from "@/utils/prisma"
 import { FormUpload } from "./_components/form-upload";
 import { DataTableDemo } from "./_components/table";
-import { generatePresignedUrl } from "@/utils/presigned-url";
+import { getCVByUserId } from "@/services/cv";
+import { getCurrentSession } from "@/services/auth";
 
 export default async function Page() {
-    const files = await prisma.cvFile.findMany({
-        where: { userId: "aa" },
-        select: {
-            id: true,
-            fileName: true,
-            path: true,
-            createdAt: true,
-        },
-        orderBy: {
-            createdAt: "desc",
-        },
-    });
-
-    const filesWithUrl = await Promise.all(
-        files.map(async (file) => ({
-            ...file,
-            previewUrl: await generatePresignedUrl(file.fileName),
-        }))
-    );
+    const filesWithUrl = await getCVByUserId();
+    const session = await getCurrentSession();
 
     return (
         <main className=" py-10 max-w-6xl mx-auto space-y-8">
             <section className="mb-6">
-                <h1 className="text-2xl font-bold text-cv-primary">Keep it up, Jake 👋</h1>
+                <h1 className="text-2xl font-bold text-cv-primary">Keep it up, {session?.user?.name} 👋</h1>
                 <p className="text-zinc-500">Manage your uploaded CV here</p>
             </section>
 

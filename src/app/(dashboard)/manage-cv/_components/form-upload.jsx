@@ -16,9 +16,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 export function FormUpload() {
-  const initialState = { status: "" };
+  const initialState = { status: "", message: "" };
   const [state, action, pending] = useActionState(uploadCvAction, initialState);
   const [open, setOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -26,6 +27,7 @@ export function FormUpload() {
 
   useEffect(() => {
     if (state?.status === "success") {
+      toast.success(state.message);
       setOpen(false);
       setErrorMessage("");
       setFile(null);
@@ -81,7 +83,7 @@ export function FormUpload() {
           className="space-y-4"
           onSubmit={(e) => {
             if (errorMessage || !file) {
-              e.preventDefault(); // Mencegah pengiriman form
+              e.preventDefault();
             }
           }}
         >
@@ -100,7 +102,7 @@ export function FormUpload() {
 
           <Button
             type="submit"
-            className="bg-cv-primary hover:bg-cv-primary/90 transition-all duration-200 shadow-sm text-white font-medium"
+            className="bg-cv-primary hover:bg-cv-primary/90 transition-all duration-200 shadow-sm text-white font-medium w-full"
             disabled={pending}
           >
             {pending ? "Uploading..." : "Upload CV"}

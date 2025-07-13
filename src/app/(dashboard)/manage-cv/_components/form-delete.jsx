@@ -14,14 +14,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useActionState, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export const FormDelete = ({ id, fileName }) => {
-  const initialState = { status: "" };
+  const initialState = { status: "", message: "" };
   const [state, action, pending] = useActionState(deleteCvAction, initialState);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (state?.status === "success") {
+      toast.success(state.message);
       setOpen(false);
     }
   }, [state]);
@@ -55,7 +57,7 @@ export const FormDelete = ({ id, fileName }) => {
             <input type="hidden" name="fileName" value={fileName} readOnly />
             <Button
               disabled={pending}
-              className="cursor-pointer"
+              className="cursor-pointer w-full"
               type="submit"
               variant="destructive"
             >
