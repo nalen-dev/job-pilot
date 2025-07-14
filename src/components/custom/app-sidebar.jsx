@@ -1,3 +1,5 @@
+"use client";
+
 import { Home, ChartBar, HelpCircle, LogOut, FileEdit } from "lucide-react";
 import {
   Sidebar,
@@ -18,17 +20,19 @@ import {
   CollapsibleTrigger,
 } from "../ui/collapsible";
 import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 
 export function AppSidebar() {
+  const pathname = usePathname();
   const items = [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/",
       icon: Home,
     },
     {
       title: "Upload & Manage CV",
-      url: "#",
+      url: "/manage-cv",
       icon: FileEdit,
     },
     {
@@ -101,7 +105,7 @@ export function AppSidebar() {
                           "hover:bg-gray-100 text-gray-500 hover:text-cv-primary",
                           {
                             "bg-cv-primary text-white rounded-sm":
-                              item.title == "Dashboard",
+                              item.url == pathname,
                           }
                         )}
                         asChild
