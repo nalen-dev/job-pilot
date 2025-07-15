@@ -1,3 +1,4 @@
+"use server";
 import { getCurrentSession } from "@/services/auth";
 import { s3Client } from "@/utils/s3";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
