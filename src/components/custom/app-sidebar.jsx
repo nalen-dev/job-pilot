@@ -45,10 +45,6 @@ export function AppSidebar() {
           url: "/analyze-cv",
         },
         {
-          title: "Saved Analysis",
-          url: "#",
-        },
-        {
           title: "Skill Gap Insight",
           url: "#",
         },

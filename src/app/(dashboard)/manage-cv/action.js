@@ -60,7 +60,7 @@ export default async function uploadCvAction(_, formData) {
         console.log(error);
     }
 
-    revalidatePath("/my-cv");
+    revalidatePath("/manage-cv");
 
     return {
         status: "success",
@@ -104,7 +104,7 @@ export async function deleteCvAction(_, formData) {
         console.log(error);
     }
 
-    revalidatePath("/my-cv");
+    revalidatePath("/manage-cv");
 
     return {
         status: "success",
