@@ -1,29 +1,87 @@
 "use server";
 
+import { getCurrentSession } from "@/services/auth";
 import { openai } from "@/utils/ai";
 import { prisma } from "@/utils/prisma";
 
 export async function analyzeCVAction(_, formData) {
+    const session = await getCurrentSession();
+    if (!session) {
+        return {
+            status: 'error',
+            message: 'Unauthorized'
+        }
+    }
+
     const selectedFile = formData.get('selectedFile');
     const jobDesc = formData.get('jobDesc');
 
     if (!selectedFile || !jobDesc) {
-        throw new Error("No selectedFile or jobDesc");
+        return {
+            status: 'error',
+            message: 'Fields are required'
+        }
+    };
+
+
+    let file, fileId, fileUrl;
+    try {
+        const parsed = JSON.parse(selectedFile);
+        fileId = parsed.fileId;
+        fileUrl = parsed.fileUrl;
+        console.log("Selected file:", fileUrl);
+
+        const res = await fetch(fileUrl);
+        if (!res.ok) {
+            return {
+                status: 'error',
+                message: 'Failed to fetch CV file'
+            }
+        };
+        const arrayBuffer = await res.arrayBuffer();
+        const blob = new Blob([arrayBuffer], { type: res.headers.get("content-type") || "application/pdf" });
+        file = new File([blob], "cv.pdf", { type: blob.type });
+    } catch (error) {
+        console.log(error);
+        return {
+            status: 'error',
+            message: 'Failed to process CV file'
+        }
     }
 
-    const { fileId, fileUrl } = JSON.parse(selectedFile);
-    console.log("Selected file:", fileUrl);
-
-    const res = await fetch(fileUrl);
-    if (!res.ok) {
-        throw new Error(`Failed to fetch file: ${res.status} ${res.statusText}`);
-    }
-
-    const arrayBuffer = await res.arrayBuffer();
-    const blob = new Blob([arrayBuffer], { type: res.headers.get("content-type") || "application/pdf" });
-    const file = new File([blob], "cv.pdf", { type: blob.type });
 
     let result;
+    const PROMPT = `You are a professional resume analyzer. Analyze the given CV file with job description: ${jobDesc}
+    
+    Extract the following:
+    1. jobTitle: extracted from job description
+    2. matchScore: Percentage (0–100) indicating how well the CV aligns with the job description.
+    3. skillMatch: ONLY list of explicit technical or professional skills that appear in both the job description and the CV. Do not include soft skills, traits, education, GPA, or generic terms.
+    4. skillMismatch: ONLY technical or professional skills from the job description that are missing in the CV. Exclude soft skills or attitudes. Do not mention "not explicitly stated".
+    5. analysis: Write with:
+
+    ### 💪 Strength
+    - Mention strong qualifications, experiences, skills relevant to the job, or etc.
+    - You may highlight things like education, GPA, project experience, soft skills, or internships.
+    
+    ### 🔴 Weakness
+    - Mention what’s missing or could be improved, such as lack of specific skills, unclear experience, or relevance
+    
+    ### 🚀 Improvement
+    - What to improve to increase job fit
+    - Is the CV clear and well-structured? If not, suggest improvements
+    - Any important sections that are missing in the CV (e.g., portfolio, contact)
+    - Is it ATS-friendly? If not, explain why and how to fix it.
+
+    ### 📌 Conclusion
+    - Final summary
+
+    IMPORTANT
+    - Use professional tone
+    - Make sure to proofread and edit your work for clarity, coherence, and correctness.
+    - Use "No Information Available" if the information is not available.
+    `;
+
     try {
         const uploadedFile = await openai.files.create({
             file: file,
@@ -31,7 +89,7 @@ export async function analyzeCVAction(_, formData) {
         });
 
         const response = await openai.responses.parse({
-            model: "gpt-4o-mini",
+            model: "gpt-4.1",
             input: [
                 {
                     role: "user",
@@ -42,7 +100,7 @@ export async function analyzeCVAction(_, formData) {
                         },
                         {
                             type: "input_text",
-                            text: `You are a professional resume analyzer. Analyze CV with job description: ${jobDesc}`
+                            text: PROMPT
                         }
                     ]
                 }
@@ -56,11 +114,11 @@ export async function analyzeCVAction(_, formData) {
                         properties: {
                             jobTitle: {
                                 type: "string",
-                                description: "The title of the job"
+                                description: "The title of the job description"
                             },
                             matchScore: {
                                 type: "number",
-                                description: "How well the CV matches the job description (0–100)"
+                                description: "Match percentage between CV and job description (0–100)"
                             },
                             skillMatch: {
                                 type: "array",
@@ -74,7 +132,7 @@ export async function analyzeCVAction(_, formData) {
                             },
                             analysis: {
                                 type: "string",
-                                description: "Markdown-formatted the analysis with sections: overview, strengths, gaps, areas for improvement, conclusion"
+                                description: "analyze with sections: strengths, waekness, improvement and conclusion"
                             },
                         },
                         required: ["jobTitle", "matchScore", "skillMatch", "skillMismatch", "analysis"],
@@ -86,23 +144,36 @@ export async function analyzeCVAction(_, formData) {
         result = response.output_parsed;
     } catch (error) {
         console.log(error);
+        return {
+            status: 'error',
+            message: 'Failed to analyze CV'
+        }
     }
 
-    await prisma.aiSummarization.create({
-        data: {
-            jobTitle: result.jobTitle,
-            jobDesc,
-            matchScore: result.matchScore,
-            skillMatch: result.skillMatch,
-            skillMismatch: result.skillMismatch,
-            summarizeDetail: result.analysis,
-            cvId: fileId,
-        },
-    });
+    try {
+        await prisma.aiSummarization.create({
+            data: {
+                cvId: fileId,
+                userId: session.user.id,
+                jobTitle: result.jobTitle,
+                jobDesc,
+                matchScore: result.matchScore,
+                skillMatch: result.skillMatch,
+                skillMismatch: result.skillMismatch,
+                summarizeDetail: result.analysis,
+            },
+        });
+    } catch (error) {
+        console.log(error);
+        return {
+            status: "error",
+            message: "Failed to save result to database.",
+        };
+    }
 
     console.log(result);
     return {
-        success: true,
-        data: result,
+        status: 'success',
+        message: result,
     };
 }
