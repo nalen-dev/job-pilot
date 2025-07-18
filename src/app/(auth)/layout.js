@@ -1,6 +1,9 @@
-import { BarChart3, Quote, Users } from "lucide-react";
+
 import Image from "next/image";
 import React from "react";
+
+import { BarChart3, Quote} from "lucide-react";
+
 
 export default function Layout({ children }) {
   

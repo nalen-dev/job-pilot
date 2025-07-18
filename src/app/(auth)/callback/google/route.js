@@ -36,8 +36,8 @@ export async function GET(request) {
     const userData = await res.json()
   
     const existingUser = await getUserByEmail(userData.email);
+
     
-    // Check if user exists
     if (existingUser) {
       const newSession = await createSession(existingUser.id);
       

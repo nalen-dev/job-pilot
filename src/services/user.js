@@ -37,7 +37,6 @@ export async function getUserByEmail(email, withPassword = false) {
   if (!user) {
     return null;
   }
-
   return {
     id: user.id,
     name: user.name,
