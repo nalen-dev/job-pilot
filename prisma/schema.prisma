@@ -18,6 +18,7 @@ model User {
   updatedAt    DateTime        @updatedAt @map("updated_at")
   session      Session[]
   cvFile       CvFile[]
+  aiSummary    AiSummarization[]
 
   @@map("user")
 }
@@ -38,19 +39,27 @@ model CvFile {
   path         String          @map("path")
   size         Int             @map("size")
   createdAt    DateTime        @map("created_at") @default(now())
-  user         User            @relation(fields: [userId], references: [id])
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  aiSummarization AiSummarization[]
 
   @@map("cv_file")
 }
 
 model AiSummarization {
-  id              BigInt         @id
-  cvdId           BigInt         @map("cvd_id")
-  jobTitle        String         @map("job_title")
-  jobLink         String         @map("job_link")
-  summarizeDetail String         @map("sumarize_detail")
-  createdAt      DateTime        @map("created_at")
-  updatedAt      DateTime        @map("updated_at")
+  id              String         @id @default(cuid())
+  cvId            String?        @map("cv_id")
+  userId          String         @map("user_id")
+  jobTitle        String?        @map("job_title")
+  jobDesc         String         @map("job_desc")
+  matchScore      Float?         @map("match_score")
+  skillMatch      String[]       @map("skill_match")
+  skillMismatch   String[]       @map("skill_mismatch")
+  summarizeDetail String?        @map("sumarize_detail")
+  status          String         @default("processing")
+  createdAt      DateTime        @map("created_at") @default(now())
+  updatedAt      DateTime        @map("updated_at") @updatedAt
+  cvFile         CvFile?         @relation(fields: [cvId], references: [id], onDelete: SetNull)
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   userGapSkill   UserGapSkill[]
 
   @@map("ai_summarization")
@@ -58,7 +67,7 @@ model AiSummarization {
 
 model UserGapSkill {
   id               BigInt             @id
-  aisId            BigInt             @map("ais_id")
+  aisId            String             @map("ais_id")
   skill            String
   timeToMaster     String             @map("time_to_master")
   assessmentDetail AssessmentDetail[]

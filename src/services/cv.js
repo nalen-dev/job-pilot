@@ -1,3 +1,4 @@
+"use server";
 import { prisma } from "@/utils/prisma";
 import { getCurrentSession } from "./auth";
 import { redirect } from "next/navigation";
