@@ -1,7 +1,7 @@
 import { prisma } from "@/utils/prisma";
 import MarkdownPage from "../_components/markdown";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import Image from "next/image";
 
 export default async function Page({ params }) {
     const { id } = await params;
@@ -12,13 +12,16 @@ export default async function Page({ params }) {
     });
     return (
         <div>
-            <Button className="mt-4 bg-cv-primary">
-                <Link href="/analyze-cv">
-                    Back
-                </Link>
-            </Button>
-            <div className="max-w-3xl mx-auto my-12 px-4">
-                <section className="mt-10 space-y-6 bg-white p-6 rounded-xl shadow-sm border">
+            <Link href="/analyze-cv" className="mt-6 ml-4 inline-block">
+                <Image
+                    src="/images/left-arrow.png"
+                    alt="back"
+                    width={45}
+                    height={45}
+                />
+            </Link>
+            <div className="max-w-3xl mx-auto mb-7 px-4">
+                <section className="mt-2 space-y-6 bg-white p-6 rounded-xl shadow-sm border">
                     <h2 className="text-2xl font-bold text-cv-primary">
                         🤖 AI Summary Result
                     </h2>

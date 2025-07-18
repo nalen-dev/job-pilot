@@ -50,7 +50,6 @@ export const generateAnalysisTask = task({
       - What to improve to increase job fit
       - Is the CV clear and well-structured? If not, suggest improvements
       - Any important sections that are missing in the CV (e.g., portfolio, contact)
-      - Is it ATS-friendly? If not, explain why and how to fix it.
 
       ### 📌 Conclusion
       - Final summary
