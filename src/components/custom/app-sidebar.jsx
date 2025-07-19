@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, ChartBar, HelpCircle, LogOut, FileEdit } from "lucide-react";
+import { Home, ChartBar, Settings, LogOut, FileEdit } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -51,9 +51,9 @@ export function AppSidebar() {
       ],
     },
     {
-      title: "Help",
-      url: "#",
-      icon: HelpCircle,
+      title: "Settings",
+      url: "/settings",
+      icon: Settings,
     },
     {
       title: "Logout",
