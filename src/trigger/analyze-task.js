@@ -1,4 +1,3 @@
-import { prisma } from "@/utils/prisma";
 import { logger, task, wait } from "@trigger.dev/sdk/v3";
 import { openai } from "@/utils/ai";
 
@@ -129,32 +128,36 @@ export const generateAnalysisTask = task({
         }
 
         try {
-            await prisma.aiSummarization.update({
-                where: {
-                    id: payload.id
+            const response = await fetch("https://job-pilot-five.vercel.app/api/analyze", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
                 },
-                data: {
+                body: JSON.stringify({
+                    id: payload.id,
                     jobTitle: result.jobTitle,
                     matchScore: result.matchScore,
                     skillMatch: result.skillMatch,
                     skillMismatch: result.skillMismatch,
                     summarizeDetail: result.analysis,
-                    status: "completed",
-                },
+                })
             });
+            if (!response.ok) {
+                throw new Error("Failed to call update API")
+            }
+            const resData = await response.json();
+            console.log("Update API response", resData);
+            return {
+                status: "success",
+                message: resData
+            }
         } catch (error) {
             console.log(error);
             return {
                 status: "error",
-                message: "Failed to save result to database.",
+                message: "Failed to call update API",
             };
         }
-
-        console.log(result);
-        return {
-            status: 'success',
-            message: result,
-        };
     },
     onSuccess: async (payload, { ctx }) => {
         logger.log("Analysis generated", { payload, ctx });
