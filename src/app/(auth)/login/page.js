@@ -31,7 +31,7 @@ export default function Page() {
               <div className="w-full border-t border-gray-200"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 text-gray-500">Or Sign up with email</span>
+              <span className="px-2 text-gray-500">Or Sign in with email</span>
             </div>
           </div>
           {/* Login Form */}
