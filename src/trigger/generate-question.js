@@ -43,7 +43,7 @@ export async function GenerateQuestionAI(skill,assessmentId) {
 });
 
     try {
-        const response = await fetch("http://localhost:3001/api/assessment",{
+        const response = await fetch("https://job-pilot-five.vercel.app/api/assessment",{
             method: "POST",
             headers: {
                     "Content-Type": "application/json"
