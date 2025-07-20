@@ -1,6 +1,14 @@
 "use client";
 
-import { Home, ChartBar, HelpCircle, LogOut, FileEdit } from "lucide-react";
+import {
+  Home,
+  ChartBar,
+  HelpCircle,
+  Settings,
+  LogOut,
+  FileEdit,
+  PencilIcon,
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -9,9 +17,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarFooter,
   SidebarGroup,
-  SidebarHeader,
   SidebarMenuSub,
 } from "@/components/ui/sidebar";
 import {
@@ -21,10 +27,15 @@ import {
 } from "../ui/collapsible";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+import { useActionState } from "react";
+import { logoutAction } from "@/app/(auth)/action";
+import { Button } from "../ui/button";
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const items = [
+  const [state, action, pending] = useActionState(logoutAction, null);
+
+  const menuItems = [
     {
       title: "Dashboard",
       url: "/",
@@ -37,28 +48,18 @@ export function AppSidebar() {
     },
     {
       title: "Analyze CV",
-      url: "#",
+      url: "/analyze-cv",
       icon: ChartBar,
-      child: [
-        {
-          title: "Saved Analysis",
-          url: "#",
-        },
-        {
-          title: "Skill Gap Insight",
-          url: "#",
-        },
-      ],
     },
     {
-      title: "Help",
-      url: "#",
-      icon: HelpCircle,
+      title: "Assessment",
+      url: "/assessment",
+      icon: PencilIcon,
     },
     {
-      title: "Logout",
-      url: "#",
-      icon: LogOut,
+      title: "Settings",
+      url: "/settings",
+      icon: Settings,
     },
   ];
 
@@ -71,7 +72,7 @@ export function AppSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
+              {menuItems.map((item) => (
                 <Collapsible key={item.title}>
                   <SidebarMenuItem>
                     {item.child ? (
@@ -81,22 +82,20 @@ export function AppSidebar() {
                             className="hover:bg-gray-100 text-gray-500 hover:text-cv-primary"
                             asChild
                           >
-                            <a href={item.url} className="">
+                            <a href={item.url}>
                               <item.icon />
                               <span>{item.title}</span>
                             </a>
                           </SidebarMenuButton>
                         </CollapsibleTrigger>
                         <CollapsibleContent>
-                          {item.child.map((x) => {
-                            return (
-                              <SidebarMenuSub key={x.title}>
-                                <SidebarMenuButton className="hover:bg-gray-100 text-gray-500 hover:text-cv-primary cursor-pointer">
-                                  {x.title}
-                                </SidebarMenuButton>
-                              </SidebarMenuSub>
-                            );
-                          })}
+                          {item.child.map((childItem) => (
+                            <SidebarMenuSub key={childItem.title}>
+                              <SidebarMenuButton className="hover:bg-gray-100 text-gray-500 hover:text-cv-primary cursor-pointer">
+                                {childItem.title}
+                              </SidebarMenuButton>
+                            </SidebarMenuSub>
+                          ))}
                         </CollapsibleContent>
                       </>
                     ) : (
@@ -105,7 +104,7 @@ export function AppSidebar() {
                           "hover:bg-gray-100 text-gray-500 hover:text-cv-primary",
                           {
                             "bg-cv-primary text-white rounded-sm":
-                              item.url == pathname,
+                              item.url === pathname,
                           }
                         )}
                         asChild
@@ -119,6 +118,20 @@ export function AppSidebar() {
                   </SidebarMenuItem>
                 </Collapsible>
               ))}
+
+              <SidebarMenuItem key="logout">
+                <form action={action}>
+                  <Button
+                    variant="ghost"
+                    className="w-full hover:bg-gray-100 text-gray-500 hover:text-cv-primary hover:cursor-pointer justify-start gap-3"
+                    type="submit"
+                    disabled={pending}
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Logout</span>
+                  </Button>
+                </form>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

@@ -1,33 +1,34 @@
 "use client";
+import { useActionState, useEffect } from "react";
+import { toast } from "sonner";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { registerAction } from "../action";
 import { Label } from "@/components/ui/label";
-import Link from "next/link";
-import Image from "next/image";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useActionState, useEffect } from "react";
-import { toast } from "sonner";
+
+import { registerAction } from "../action";
+import SocialLogin from "../_components/social-login";
 
 export default function Page() {
   const [state, action, pending] = useActionState(registerAction, null);
 
   useEffect(() => {
     if (state?.status === "success") {
-      toast.success("Success!",{
+      toast.success("Success!", {
         description: state.message,
         className: "bg-green-50 border-green-200 text-green-800",
-      })
+      });
     }
-    
+
     if (state?.status === "error") {
-      toast.error("Error",{
+      toast.error("Error", {
         description: state.message,
-      })
+      });
     }
-  }, [state])
-  
+  }, [state]);
+
   return (
     <main className="space-y-6">
       <div className="w-full max-w-md mx-auto">
@@ -39,19 +40,7 @@ export default function Page() {
 
         <CardContent className="space-y-6">
           {/* Google Login */}
-          <Button
-            variant="outline"
-            className="w-full flex items-center justify-center space-x-2 border-gray-300 hover:bg-gray-50"
-            type="button">
-            <Image
-              src="/images/icon-google.png"
-              alt="Google icon"
-              width={20}
-              height={20}
-            />
-            <span className="text-indigo-600">Sign up with Google</span>
-          </Button>
-
+          <SocialLogin />
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-200"></div>
@@ -60,7 +49,6 @@ export default function Page() {
               <span className="px-2 text-gray-500">Or Sign up with email</span>
             </div>
           </div>
-
           {/* Login Form */}
           <form action={action} className="space-y-4">
             <div className="space-y-3">
@@ -121,7 +109,6 @@ export default function Page() {
                     className="text-indigo-600 hover:underline">
                     Sign in
                   </Link>
-                  
                 </p>
               </div>
               <div>

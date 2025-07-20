@@ -1,7 +1,9 @@
 "use server";
 
+import * as arctic from "arctic";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+
 import {
   createSession,
   getCurrentSession,
@@ -9,6 +11,10 @@ import {
 } from "@/services/auth";
 import { createUser, getUserByEmail } from "@/services/user";
 import { prisma } from "@/utils/prisma";
+
+import { google } from "@/utils/arctic"
+
+
 
 export async function registerAction(_, formData) {
   try {
@@ -73,7 +79,6 @@ export async function loginAction(_, formData) {
     }
 
     const getWithPassword = true;
-    // cek email
     const user = await getUserByEmail(email, getWithPassword);
     if (!user) {
       return {
@@ -86,7 +91,6 @@ export async function loginAction(_, formData) {
       };
     }
 
-    // cek password
     const isPasswordValid = await verifyPassword(password, user.password);
     if (!isPasswordValid) {
       return {
@@ -100,7 +104,6 @@ export async function loginAction(_, formData) {
     }
 
     const session = await createSession(user.id);
-
     cookieStore.set("session", session.id, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -122,12 +125,10 @@ export async function logoutAction() {
   const session = await getCurrentSession();
   const cookieStore = await cookies();
 
-  // cek session
   if (!session) {
     redirect("/login");
   }
 
-  // delete session from database
   await prisma.session.delete({
     where: {
       id: session.id,
@@ -136,4 +137,17 @@ export async function logoutAction() {
 
   cookieStore.delete("session");
   redirect("/login");
+}
+
+export async function googleLoginAction() {
+  const cookieStore = await cookies()
+
+  const state = arctic.generateState();
+  const codeVerifier = arctic.generateCodeVerifier();
+  const scopes = ['openid', 'profile', 'email'];
+
+  const url = google.createAuthorizationURL(state, codeVerifier, scopes)
+
+  cookieStore.set("codeVerifier", codeVerifier)
+  redirect(url)
 }
