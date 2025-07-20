@@ -86,7 +86,7 @@ export async function GenerateQuestionAction(_,formData) {
             data : {
                 aisId:id,
                 skill:skill,
-                status:"Generating Question"
+                status:"Ready"
             },
             select:{
                 id:true

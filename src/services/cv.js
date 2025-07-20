@@ -32,3 +32,17 @@ export async function getCVByUserId() {
 
     return filesWithUrl;
 }
+
+export async function GetTotalUserCvs(id) {
+    const totalCV = await prisma.cvFile.count({
+        where: { userId: id } })
+
+    return totalCV;
+}
+
+export async function GetTotalUserAnalyze(id) {
+    const totalAn = await prisma.aiSummarization.count({
+        where: { userId: id } })
+
+    return totalAn;
+}

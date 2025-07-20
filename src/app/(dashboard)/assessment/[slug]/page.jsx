@@ -6,7 +6,6 @@ import React from "react";
 export default async function Assessment({ params }) {
   const { slug } = await params;
   const { questionTitle, questions } = await GetAssementInformation(slug);
-  console.log(questionTitle, questions);
 
   return (
     <section>

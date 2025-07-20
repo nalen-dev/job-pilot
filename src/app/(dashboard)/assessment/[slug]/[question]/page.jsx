@@ -7,7 +7,6 @@ export default async function page({ params }) {
   const { slug, question } = await params;
   const questionIds = await GetAllAssesmentIds(slug);
   const questionDetail = await GetQuestionDetail(question);
-  console.log(questionDetail);
 
   return (
     <section className="mt-20 w-2/3 mx-auto">
