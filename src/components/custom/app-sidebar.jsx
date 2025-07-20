@@ -4,6 +4,7 @@ import {
   Home,
   ChartBar,
   HelpCircle,
+  Settings,
   LogOut,
   FileEdit,
   PencilIcon,
@@ -47,18 +48,8 @@ export function AppSidebar() {
     },
     {
       title: "Analyze CV",
-      // url: "#",
+      url: "/analyze-cv",
       icon: ChartBar,
-      child: [
-        {
-          title: "Analyze",
-          url: "/analyze-cv",
-        },
-        {
-          title: "Skill Gap Insight",
-          url: "#",
-        },
-      ],
     },
     {
       title: "Assessment",
@@ -141,68 +132,6 @@ export function AppSidebar() {
                   </Button>
                 </form>
               </SidebarMenuItem>
-              {items.map((item) => {
-                const isChildActive = item.child?.some(
-                  (child) => pathname === child.url
-                );
-                return (
-                  <Collapsible key={item.title} defaultOpen={isChildActive}>
-                    <SidebarMenuItem>
-                      {item.child ? (
-                        <>
-                          <CollapsibleTrigger asChild>
-                            <SidebarMenuButton
-                              className="hover:bg-gray-100 text-gray-500 hover:text-cv-primary"
-                              asChild
-                            >
-                              <a href={item.url} className="">
-                                <item.icon />
-                                <span>{item.title}</span>
-                              </a>
-                            </SidebarMenuButton>
-                          </CollapsibleTrigger>
-                          <CollapsibleContent>
-                            {item.child.map((x) => {
-                              return (
-                                <SidebarMenuSub key={x.title}>
-                                  <SidebarMenuButton
-                                    className={cn(
-                                      "hover:bg-gray-100 text-gray-500 hover:text-cv-primary cursor-pointer",
-                                      {
-                                        "bg-cv-primary text-white rounded-sm":
-                                          x.url == pathname,
-                                      }
-                                    )}
-                                    asChild
-                                  >
-                                    <a href={x.url}>{x.title}</a>
-                                  </SidebarMenuButton>
-                                </SidebarMenuSub>
-                              );
-                            })}
-                          </CollapsibleContent>
-                        </>
-                      ) : (
-                        <SidebarMenuButton
-                          className={cn(
-                            "hover:bg-gray-100 text-gray-500 hover:text-cv-primary",
-                            {
-                              "bg-cv-primary text-white rounded-sm":
-                                item.url == pathname,
-                            }
-                          )}
-                          asChild
-                        >
-                          <a href={item.url}>
-                            <item.icon />
-                            <span>{item.title}</span>
-                          </a>
-                        </SidebarMenuButton>
-                      )}
-                    </SidebarMenuItem>
-                  </Collapsible>
-                );
-              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

@@ -2,6 +2,7 @@ import { prisma } from "@/utils/prisma";
 import MarkdownPage from "../_components/markdown";
 import Link from "next/link";
 import Image from "next/image";
+import { GenerateQuestion } from "../_components/genereate-question";
 
 export default async function Page({ params }) {
     const { id } = await params;
@@ -52,7 +53,8 @@ export default async function Page({ params }) {
                             <p className="font-semibold mb-2">❌ Unmatched Skills</p>
                             <ul className="bg-red-100 text-red-800 p-4 pl-6 rounded-lg list-disc ml-4 space-y-1">
                                 {summary.skillMismatch.map((skill, i) => (
-                                    <li key={i}>{skill}</li>
+                                    <GenerateQuestion key={i} id={id} title={skill}/>
+                                    // <li key={i}>{skill}</li>
                                 ))}
                             </ul>
                         </div>
