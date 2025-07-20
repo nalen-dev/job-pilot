@@ -2,8 +2,10 @@
 
 import { getCurrentSession } from "@/services/auth";
 import { generateAnalysisTask } from "@/trigger/analyze-task";
+import { GenerateQuestionAI } from "@/trigger/generate-question";
 import { prisma } from "@/utils/prisma";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export async function analyzeCVAction(_, formData) {
     const session = await getCurrentSession();
@@ -65,4 +67,45 @@ export async function deleteSummaryAction(_,formData){
         status: "success",
         message: "Your CV has been deleted."
     };
+}
+
+export async function GenerateQuestionAction(_,formData) {
+    const session = await getCurrentSession();
+        if (!session) {
+            return {
+                status: 'error',
+                message: 'Unauthorized'
+            }
+        }
+    
+    const skill = formData.get('skill');
+    const id = formData.get('id');
+    var assessmentId; 
+    try {
+        assessmentId = await prisma.userGapSkill.create({
+            data : {
+                aisId:id,
+                skill:skill,
+                status:"Generating Question"
+            },
+            select:{
+                id:true
+            }
+        })
+    } catch (error) {
+        console.error("Error in GenerateQuestionAction:", error);
+        return {
+            status: 'error',
+            message: 'Failed to generate questions'
+        };
+    }
+
+
+    try {
+     await GenerateQuestionAI(skill,assessmentId)
+    } catch (error) {
+      console.log(error)   
+    }
+    
+    // redirect("/assessment")
 }
