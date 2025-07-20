@@ -43,8 +43,8 @@ export function FormUpload() {
 
   const handleFileChange = (e) => {
     const selected = e.target.files[0];
-    if (selected && selected.size > 1024 * 1024) {
-      setErrorMessage("File too large. Max file size is 1 MB.");
+    if (selected && selected.size > 5 * 1024 * 1024) {
+      setErrorMessage("File too large. Max file size is 5 MB.");
       setFile(null);
     } else {
       setErrorMessage("");
@@ -89,6 +89,9 @@ export function FormUpload() {
         >
           <div className="space-y-2">
             <Label htmlFor="file">Select PDF CV File</Label>
+            <p className="text-sm text-muted-foreground">
+              Maximum file size: 5 MB
+            </p>
             <Input
               id="file"
               type="file"
@@ -96,7 +99,7 @@ export function FormUpload() {
               accept=".pdf"
               required
               onChange={handleFileChange}
-              className="file:text-cv-primary file:font-medium file:rounded-md file:border-0 file:bg-cv-primary/10 hover:file:bg-cv-primary/20"
+              className="file:text-cv-primary file:font-medium file:rounded-md file:border-1 file:bg-cv-primary/10 hover:file:bg-cv-primary/20"
             />
           </div>
 

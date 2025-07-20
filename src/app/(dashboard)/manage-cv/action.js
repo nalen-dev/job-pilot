@@ -32,7 +32,7 @@ export default async function uploadCvAction(_, formData) {
         const fileUpload = s3Client.send(
             new PutObjectCommand({
                 Bucket: "cv",
-                Key: `${session.user.name}/${key}`,
+                Key: `${session.user.id}/${key}`,
                 Body: buffer,
                 ContentType: file.type
             })
@@ -60,7 +60,7 @@ export default async function uploadCvAction(_, formData) {
         console.log(error);
     }
 
-    revalidatePath("/my-cv");
+    revalidatePath("/manage-cv");
 
     return {
         status: "success",
@@ -97,14 +97,14 @@ export async function deleteCvAction(_, formData) {
         await s3Client.send(
             new DeleteObjectCommand({
                 Bucket: "cv",
-                Key: `${session.user.name}/${objectKey}`
+                Key: `${session.user.id}/${objectKey}`
             })
         );
     } catch (error) {
         console.log(error);
     }
 
-    revalidatePath("/my-cv");
+    revalidatePath("/manage-cv");
 
     return {
         status: "success",

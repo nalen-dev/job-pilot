@@ -11,6 +11,7 @@ export default function AppHeader() {
   const getTitle = () => {
     if (pathname.startsWith("/manage-cv")) return "Manage CV";
     if (pathname.startsWith("/analyze")) return "Analyze CV";
+    if (pathname.startsWith("/settings")) return "Settings";
     return "Dashboard";
   };
   return (
